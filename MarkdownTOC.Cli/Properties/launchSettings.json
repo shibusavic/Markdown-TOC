@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MarkdownTOC.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "--help"
+    }
+  }
+}
