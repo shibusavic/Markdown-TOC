@@ -13,6 +13,12 @@ To create a table of contents within an existing file, use:
 md-toc -f c:\documents\myfile.md
 ```
 
+You can specify multiple markdown files, as in:
+
+```
+md-toc -f c:\documents\myfile.md -f c:\documents\my-other-file.md
+```
+
 The above will create a "Table of Contents" section at the top of the file and provide **internal** links to all of the headers within that file.
 
 To create a table of contents file from all markdown files within a directory structure, use:

@@ -11,7 +11,7 @@ namespace MarkdownTOC.Cli
     {
         static bool verbose = false;
         static bool showHelp = false;
-        static FileInfo markdownFileInfo = null;
+        static HashSet<FileInfo> markdownFileInfos = new();
         static FileInfo outputFileInfo = null;
         static DirectoryInfo directoryInfo = null;
         static bool recursiveDirectorySearch = false;
@@ -33,10 +33,13 @@ namespace MarkdownTOC.Cli
                 }
                 else
                 {
-                    if (markdownFileInfo != null)
+                    if (markdownFileInfos.Any())
                     {
-                        await MarkdownFile.CreateInternalTableOfContentsAsync(markdownFileInfo);
-                        Communicate($"TOC added to {markdownFileInfo.FullName}");
+                        foreach (var markdownFileInfo in markdownFileInfos)
+                        {
+                            await MarkdownFile.CreateInternalTableOfContentsAsync(markdownFileInfo);
+                            Communicate($"TOC added to {markdownFileInfo.FullName}");
+                        }
                     }
 
                     if (directoryInfo != null)
@@ -109,7 +112,7 @@ namespace MarkdownTOC.Cli
                     case "--file":
                     case "-f":
                         if (a == args.Length - 1) { throw new ArgumentException($"Expecting a file name after {args[a]}"); }
-                        markdownFileInfo = new FileInfo(args[++a]);
+                        markdownFileInfos.Add(new FileInfo(args[++a]));
                         break;
                     case "--directory":
                     case "-d":
@@ -146,9 +149,15 @@ namespace MarkdownTOC.Cli
 
         static void ValidateArguments()
         {
-            if (markdownFileInfo != null && !markdownFileInfo.Exists)
+            if (markdownFileInfos.Any())
             {
-                throw new ArgumentException($"'{markdownFileInfo.FullName}' could not be found.");
+                foreach (FileInfo markdownFileInfo in markdownFileInfos)
+                {
+                    if (!markdownFileInfo.Exists)
+                    {
+                        throw new ArgumentException($"'{markdownFileInfo.FullName}' could not be found.");
+                    }
+                }
             }
 
             if (directoryInfo != null && !directoryInfo.Exists)
